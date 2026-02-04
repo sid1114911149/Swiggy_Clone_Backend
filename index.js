@@ -30,6 +30,6 @@ app.use('./uploads',express.static('uploads'));
 app.listen(PORT,(req,res)=>{
     console.log(`Server is succesfully connected and runnning at PORT:${PORT}`);
 })
-app.use('/home',(req,res)=>{
+app.use('/',(req,res)=>{
     res.send("<h1> welcome to Swiggy");
 })
