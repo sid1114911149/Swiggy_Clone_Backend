@@ -40,12 +40,13 @@ const addFirm = async (req, res) => {
         });
         // const token=jwt.sign({firmId:firm._id},secretKey,{expiresIn:'1h'});
         const savedFirm=await firm.save();        // ✅ saved to DB
+        const firmId=savedFirm._id;
         vendor.firm.push(savedFirm);
         await vendor.save();
 
         res.status(201).json({
             message: "Firm created successfully",
-            firm,
+            firmId,
             // token
         });
 
