@@ -2,6 +2,7 @@ const Product=require('../models/Product');
 const Firm=require("../models/Firm");
 const multer=require('multer');
 const dotEnv=require('dotenv');
+const path=require('path');
 dotEnv.config();
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
