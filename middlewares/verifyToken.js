@@ -8,14 +8,17 @@ const secretKey = process.env.WhatisYourName;
 
 const verifyToken = async (req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
+        // const authHeader = req.headers.authorization;
 
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        //     return res.status(401).json({ message: "Authorization token required" });
+        // }
+
+        // const token = authHeader.split(" ")[1];
+        const token=req.headers.token;
+        if(!token){
             return res.status(401).json({ message: "Authorization token required" });
         }
-
-        const token = authHeader.split(" ")[1];
-
         const decoded = jwt.verify(token, secretKey);
 
         const vendor = await Vendor.findById(decoded.vendorId);

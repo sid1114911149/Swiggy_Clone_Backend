@@ -3,6 +3,7 @@ const Vendor = require('../models/Vendor');
 const multer = require('multer');
 const dotenv = require('dotenv');
 const jwt=require('jsonwebtoken');
+const path=require("path");
 dotenv.config();
 const secretKey=process.env.WhatisYourName;
 // Multer config
