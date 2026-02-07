@@ -2,13 +2,6 @@ const Firm = require('../models/Firm');
 const Vendor = require('../models/Vendor');
 const multer = require('multer');
 const dotenv = require('dotenv');
-<<<<<<< HEAD
-const jwt = require('jsonwebtoken');
-const path = require("path");
-=======
-const jwt=require('jsonwebtoken');
-const path=require('path');
->>>>>>> de1916c10a0b723982836c8c2b94de2403a56c27
 dotenv.config();
 const secretKey = process.env.WhatisYourName;
 // Multer config
@@ -46,23 +39,6 @@ const addFirm = async (req, res) => {
             vendor: vendor._id
         });
         // const token=jwt.sign({firmId:firm._id},secretKey,{expiresIn:'1h'});
-<<<<<<< HEAD
-        const existingFirm = await Firm.findOne({
-            firm: firm._id,
-            firmName
-        });
-
-        if (existingFirm) {
-            return res.status(400).json({
-                message: "Firm already exists for this firm"
-            });
-        }
-        const savedFirm = await firm.save();        // ✅ saved to DB
-        const firmId = savedFirm._id;
-=======
-        const savedFirm=await firm.save();        // ✅ saved to DB
-        const firmId=savedFirm._id;
->>>>>>> de1916c10a0b723982836c8c2b94de2403a56c27
         vendor.firm.push(savedFirm);
         await vendor.save();
 
