@@ -17,7 +17,7 @@ router.get('/uploads/:imageName', (req, res) => {
         res.status(500).json({ message: 'Image not found' });
     }
 });
-
+router.get('/get-allFirms',verifyToken,firmController.getAllFirms)
 router.delete('/delete/:firmId',firmController.deleteFirm);
 
 module.exports=router;

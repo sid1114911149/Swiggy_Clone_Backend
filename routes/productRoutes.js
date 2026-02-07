@@ -4,7 +4,7 @@ const productController=require('../controllers/productController');
 
 router.post('/add-product/:firmId',productController.addProduct);
 router.get('/:firmId/products',productController.getAllProducts);
-
+router.get('/getProduct/:id',productController.getProduct);
 router.get('/uploads/:imageName', (req, res) => {
     try {
         const imageName = req.params.imageName;

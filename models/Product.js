@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true,
     }, bestseller: {
-        type: String,
+        type: Boolean,
         required: true
     }, offer: {
         type: String,
