@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 const Product = require('../models/Product');
 const Firm = require("../models/Firm");
 const multer = require('multer');
 const dotEnv = require('dotenv');
 const path = require("path");
+=======
+const Product=require('../models/Product');
+const Firm=require("../models/Firm");
+const multer=require('multer');
+const dotEnv=require('dotenv');
+const path=require('path');
+>>>>>>> de1916c10a0b723982836c8c2b94de2403a56c27
 dotEnv.config();
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -119,6 +127,12 @@ const deleteProduct = async (req, res) => {
 }
 
 
+<<<<<<< HEAD
 module.exports = {
     addProduct: [upload.single('image'), addProduct], getAllProducts, deleteProduct,getProduct
 };
+=======
+module.exports={
+    addProduct:[upload.single('image'), addProduct],getAllProducts,deleteProduct
+};
+>>>>>>> de1916c10a0b723982836c8c2b94de2403a56c27
