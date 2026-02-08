@@ -9,7 +9,7 @@ const vendorSchema=new mongoose.Schema({
         unique:true
     },password:{
         type:String,
-        requirted:true,
+        required:true,
 
     },firm:[
         {
