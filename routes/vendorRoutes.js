@@ -1,9 +1,20 @@
-const express=require('express');
-const Routes=express.Router();
-const vendorController=require("../controllers/vendorController");
-Routes.post('/Register',vendorController.add_vendor);
-Routes.post('/Login',vendorController.vendorLogin);
-Routes.delete('/deleteVendor/:id',vendorController.deleteVendor);
-Routes.get('/get-vendors',vendorController.getAllvendors);
-Routes.get('/getDetails/:id',vendorController.get_vendor);
-module.exports=Routes;
+const express = require('express');
+const router = express.Router();
+const vendorController = require('../controllers/vendorController');
+
+/* ================= REGISTER ================= */
+router.post('/register', vendorController.addVendor);
+
+/* ================= LOGIN ================= */
+router.post('/login', vendorController.vendorLogin);
+
+/* ================= DELETE VENDOR ================= */
+router.delete('/delete/:id', vendorController.deleteVendor);
+
+/* ================= GET ALL VENDORS ================= */
+router.get('/get-vendors', vendorController.getAllVendors);
+
+/* ================= GET SINGLE VENDOR ================= */
+router.get('/get-details/:id', vendorController.getVendor);
+
+module.exports = router;

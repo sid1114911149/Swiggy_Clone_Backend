@@ -1,21 +1,34 @@
-const mongoose=require("mongoose");
-const vendorSchema=new mongoose.Schema({
-    username:{
-        type:String,
-        required:true,
-    },email:{
-        type:String,
-        required:true,
-        unique:true
-    },password:{
-        type:String,
-        required:true,
+const mongoose = require('mongoose');
 
-    },firm:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'Firm'
-        }
+const vendorSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+
+    password: {
+      type: String,
+      required: true
+    },
+
+    firm: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Firm'
+      }
     ]
-})
-module.exports=mongoose.model("Vendor",vendorSchema);
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Vendor', vendorSchema);

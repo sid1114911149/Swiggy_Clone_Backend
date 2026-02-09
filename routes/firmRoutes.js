@@ -5,24 +5,27 @@ const path = require('path');
 const firmController = require('../controllers/firmController');
 const verifyToken = require('../middlewares/verifyToken');
 
+/* ================= ADD FIRM ================= */
 router.post(
   '/add-firm',
   verifyToken,
-  ...firmController.addFirm
+  firmController.addFirm
 );
 
+/* ================= SERVE FIRM IMAGE ================= */
 router.get('/uploads/:imageName', (req, res) => {
-  try {
-    const imageName = req.params.imageName;
-    const imagePath = path.join(__dirname, '..', 'uploads', imageName);
-    res.sendFile(imagePath);
-  } catch (error) {
-    res.status(500).json({ message: 'Image not found' });
-  }
+  const imagePath = path.join(__dirname, '..', 'uploads', req.params.imageName);
+  res.sendFile(imagePath, err => {
+    if (err) {
+      res.status(404).json({ message: 'Image not found' });
+    }
+  });
 });
 
+/* ================= GET ALL FIRMS ================= */
 router.get('/get-allFirms', verifyToken, firmController.getAllFirms);
 
+/* ================= DELETE FIRM ================= */
 router.delete('/delete/:firmId', verifyToken, firmController.deleteFirm);
 
 module.exports = router;

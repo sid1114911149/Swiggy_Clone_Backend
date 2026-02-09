@@ -2,57 +2,60 @@ const Firm = require('../models/Firm');
 const Vendor = require('../models/Vendor');
 const multer = require('multer');
 const dotenv = require('dotenv');
+
 dotenv.config();
-const secretKey = process.env.WhatisYourName;
-// Multer config
+
+/* ================= MULTER CONFIG ================= */
+
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "uploads/");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + "-" + file.originalname);
-    }
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
 });
 
 const upload = multer({ storage });
 
-// Controller
+/* ================= ADD FIRM ================= */
+
 const addFirm = async (req, res) => {
-    try {
-        const { firmName, area, category, region, offer } = req.body;
-        const image = req.file ? req.file.filename : null;
+  try {
+    const { firmName, area, offer } = req.body;
 
-        const vendor = await Vendor.findById(req.vendorId);
-        if (!vendor) {
-            return res.status(404).json({ error: "Vendor not found" });
-        }
-        // if (vendor.firm.length > 0) {
-        //     return res.status(400).json({ message: "One Vendor Can have Only one firm" });
-        // }
-        const firm = new Firm({
-            firmName,
-            area,
-            category,
-            region,
-            offer,
-            image,                // ✅ saved
-            vendor: vendor._id
-        });
-        // const token=jwt.sign({firmId:firm._id},secretKey,{expiresIn:'1h'});
-        vendor.firm.push(savedFirm);
-        await vendor.save();
+    const category = Array.isArray(req.body.category)
+      ? req.body.category
+      : [req.body.category];
 
-        res.status(201).json({
-            message: "Firm created successfully",
-            firmId,
-            // token
-        });
+    const region = Array.isArray(req.body.region)
+      ? req.body.region
+      : [req.body.region];
 
-    } catch (error) {
-        console.error("Error during firm creation:", error);
-        res.status(500).json({ error: "Server error during firm creation" });
-    }
+    const image = req.file ? req.file.filename : null;
+
+    const firm = await Firm.create({
+      firmName,
+      area,
+      category,
+      region,
+      offer,
+      image,
+      vendor: req.vendorId
+    });
+
+    res.status(201).json({
+      message: 'Firm created successfully',
+      firmId: firm._id
+    });
+
+  } catch (error) {
+    console.error("Add Firm Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
+
+/* ================= GET ALL FIRMS ================= */
 
 const getAllFirms = async (req, res) => {
   try {
@@ -61,7 +64,7 @@ const getAllFirms = async (req, res) => {
 
     if (!vendor) {
       return res.status(404).json({
-        message: "Vendor not found"
+        message: 'Vendor not found'
       });
     }
 
@@ -70,29 +73,47 @@ const getAllFirms = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(`Error occurred during Firms retrieval:`, error);
+    console.error('Get Firms Error:', error);
     res.status(500).json({
-      message: "Error occurred during Firms retrieval"
+      message: 'Error occurred during firms retrieval'
     });
   }
 };
 
+/* ================= DELETE FIRM ================= */
+
 const deleteFirm = async (req, res) => {
-    try {
-        const firmId = req.params.firmId;
-        const firm = await Firm.findByIdAndDelete(firmId);
-        if (!firm) {
-            return res.status(404).json({ message: "No firm found with given ID" });
-        }
-        res.status(202).json({ message: "Firm is successfully Deleted" });
-    } catch (error) {
-        console.log(`Error Occured during Firm Deletion:${error}`);
-        res.status(501).json({ message: "Error Occured during firm deletion" });
+  try {
+    const firmId = req.params.firmId;
+
+    const firm = await Firm.findByIdAndDelete(firmId);
+    if (!firm) {
+      return res.status(404).json({
+        message: 'No firm found with given ID'
+      });
     }
-}
 
+    await Vendor.updateOne(
+      { _id: firm.vendor },
+      { $pull: { firm: firmId } }
+    );
 
+    res.status(200).json({
+      message: 'Firm successfully deleted'
+    });
+
+  } catch (error) {
+    console.error('Delete Firm Error:', error);
+    res.status(500).json({
+      message: 'Error occurred during firm deletion'
+    });
+  }
+};
+
+/* ================= EXPORTS ================= */
 
 module.exports = {
-    addFirm: [upload.single('image'), addFirm], deleteFirm,getAllFirms
+  addFirm: [upload.single('image'), addFirm],
+  getAllFirms,
+  deleteFirm
 };

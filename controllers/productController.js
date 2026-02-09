@@ -1,18 +1,15 @@
 const Product = require('../models/Product');
 const Firm = require('../models/Firm');
 const multer = require('multer');
-const dotenv = require('dotenv');
 const path = require('path');
-
-dotenv.config();
 
 /* ================= MULTER CONFIG ================= */
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, 'uploads/');
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
@@ -23,58 +20,49 @@ const upload = multer({ storage });
 
 const addProduct = async (req, res) => {
   try {
-    const {
-      productName,
-      price,
-      bestseller,
-      offer,
-      category,
-      description
-    } = req.body;
+    const { productName, price, category, bestseller, description } = req.body;
+    const firmId = req.params.firmId;
 
-    const image = req.file ? req.file.filename : null;
-
-    const firm = await Firm.findById(req.params.firmId);
+    const firm = await Firm.findById(firmId);
     if (!firm) {
-      return res.status(404).json({ message: "No such firm exists" });
+      return res.status(404).json({ message: 'Firm not found' });
     }
 
     const existingProduct = await Product.findOne({
-      firm: firm._id,
+      firm: firmId,
       productName
     });
 
     if (existingProduct) {
       return res.status(400).json({
-        message: "Product already exists for this firm"
+        message: 'Product already exists for this firm'
       });
     }
 
     const product = new Product({
       productName,
       price,
-      bestseller,
-      offer,
       category,
-      image,
+      bestseller,
       description,
-      firm: firm._id
+      image: req.file ? req.file.filename : null,
+      firm: firmId
     });
 
     const savedProduct = await product.save();
 
-    firm.product.push(savedProduct._id);
+    firm.products.push(savedProduct._id);
     await firm.save();
 
     res.status(201).json({
-      message: "Product created successfully",
+      message: 'Product created successfully',
       product: savedProduct
     });
 
   } catch (error) {
-    console.error("Error during product creation:", error);
+    console.error('Add Product Error:', error);
     res.status(500).json({
-      message: "Error occurred during product creation"
+      message: 'Error occurred during product creation'
     });
   }
 };
@@ -85,18 +73,13 @@ const getAllProducts = async (req, res) => {
   try {
     const firmId = req.params.firmId;
 
-    const firm = await Firm.findById(firmId);
-    if (!firm) {
-      return res.status(404).json({ message: "No firm found" });
-    }
-
     const products = await Product.find({ firm: firmId });
-    res.status(200).json(products);
 
+    res.status(200).json(products);
   } catch (error) {
-    console.log("Error during product retrieval:", error);
+    console.error('Get Products Error:', error);
     res.status(500).json({
-      message: "Error occurred during product retrieval"
+      message: 'Error occurred during product retrieval'
     });
   }
 };
@@ -108,15 +91,14 @@ const getProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
 
     if (!product) {
-      return res.status(404).json({ message: "No product found" });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
     res.status(200).json(product);
-
   } catch (error) {
-    console.log("Error during product fetching:", error);
+    console.error('Get Product Error:', error);
     res.status(500).json({
-      message: "Internal server error"
+      message: 'Internal server error'
     });
   }
 };
@@ -130,18 +112,22 @@ const deleteProduct = async (req, res) => {
     const product = await Product.findByIdAndDelete(productId);
     if (!product) {
       return res.status(404).json({
-        message: "No product found with given ID"
+        message: 'No product found with given ID'
       });
     }
 
-    res.status(200).json({
-      message: "Product successfully deleted"
-    });
+    await Firm.updateOne(
+      { _id: product.firm },
+      { $pull: { products: productId } }
+    );
 
+    res.status(200).json({
+      message: 'Product successfully deleted'
+    });
   } catch (error) {
-    console.log("Error during product deletion:", error);
+    console.error('Delete Product Error:', error);
     res.status(500).json({
-      message: "Error during product deletion"
+      message: 'Error during product deletion'
     });
   }
 };
